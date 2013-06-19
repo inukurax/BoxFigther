@@ -25,7 +25,6 @@ public class Keys implements KeyListener {
 	@Override
 	public void keyPressed(KeyEvent k) {
         pressed.add(k.getKeyCode());
-        System.out.println(pressed);
         for (Integer key : pressed)
         	checkKeys(key);
 	}
@@ -41,7 +40,6 @@ public class Keys implements KeyListener {
 			player1.setMoveAngle(player1.getFaceAngle() + 90);
 			if (player1.getVelX() <= 1)
 				player1.setVelX(calcAngleMoveX(player1.getMoveAngle()) * START_SPEED);
-			player1.incVelX(calcAngleMoveX(player1.getMoveAngle()) * 0.1);
 			break;
 		case KeyEvent.VK_UP : // for jumping
 			if (player1.getY() >= bottomline - player1.getHeight()) {

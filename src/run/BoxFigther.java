@@ -21,7 +21,9 @@ public class BoxFigther extends Applet implements Runnable {
 	private static final int JUMP_HEIGHT = 200;
 	private static final int BOTTOM_HEIGHT = 100;
 	public static final double JUMP_SPEED = 7;
-	
+	// screen size
+	public static int HEIGHT = 600;
+	public static int WIDTH = 800;
 	private Thread gameloop; // main thread
 	private BufferedImage backbuffer; // double buffer
 	private Graphics2D g2d; // main drawing object for the backbuffer
@@ -33,11 +35,9 @@ public class BoxFigther extends Applet implements Runnable {
 	private Player player1;
 	private Player player2;
 
-	// screen size
-	private int height = 600;
-	private int width = 800;
 	private int bottomline;
 	private boolean drawBounds = true;
+	private boolean moveable;
 	
 	public void init() {
 		BufferedImage image;
@@ -55,32 +55,30 @@ public class BoxFigther extends Applet implements Runnable {
 
 		}
 		
-		this.setSize(width, height);
-		backbuffer = new BufferedImage(width,height, BufferedImage.TYPE_INT_RGB);
+		this.setSize(WIDTH, HEIGHT);
+		backbuffer = new BufferedImage(WIDTH,HEIGHT, BufferedImage.TYPE_INT_RGB);
 		g2d = backbuffer.createGraphics();
-		width = this.getSize().height;
-		height = this.getSize().width;
-		bottomline = width - BOTTOM_HEIGHT;
+		WIDTH = this.getSize().height;
+		HEIGHT = this.getSize().width;
+		bottomline = WIDTH - BOTTOM_HEIGHT;
 		// sets player position to middle of screen
 		int startY = bottomline - player1.getHeight();
-		player1.setX(width - 100);
+		player1.setX(WIDTH - 100);
 		player1.setY(startY);
 		player2.setX(100);
 		player2.setY(startY);
-		
 		this.addKeyListener(new Keys(player1, player2, bottomline));
-
 	}
 	
 	public void update(Graphics g) {
 		g2d.setTransform(identity);
 		// fills background
 		g2d.setPaint(Color.BLACK);
-		g2d.fillRect(0, 0, height , width);
+		g2d.fillRect(0, 0, HEIGHT , WIDTH);
 		
 		// draws the earth (bottom bounds)
 		g2d.setPaint(Color.GRAY);
-		g2d.fillRect(0, bottomline, height, bottomline);
+		g2d.fillRect(0, bottomline, HEIGHT, bottomline);
 
 		//draws x,y cord for player
 		g2d.setColor(Color.WHITE);
@@ -90,8 +88,9 @@ public class BoxFigther extends Applet implements Runnable {
 		g2d.drawString(String.format("P2: %d,%d - VelX: %f - VelY: %f", 
 				Math.round(player2.getX()), Math.round(player2.getY()),
 				player2.getVelY(), player2.getVelX()), 20, 40);
-		g2d.drawString("Use arrow keys to control p1", 20, 52);
-		g2d.drawString("a-d-w p2", 20, 64);
+		g2d.drawString("P1: Left-Up-Right", 20, 52);
+		g2d.drawString("P2: A-W-D", 20, 64);
+		g2d.drawString("Is colliding: " +isColliding(player1, player2), 20, 76);
 
 		//draws object
 		this.drawPlayer();
@@ -135,9 +134,22 @@ public class BoxFigther extends Applet implements Runnable {
 	}
 	
 	private void checkCollision() {
-		if (player1.getBounds().contains(player2.getBounds()))
-			System.out.println("touch");
-		
+		if (isColliding(player1, player2))
+		{
+			player1.setVelX(0);
+			setMoveable(false);
+			player2.setVelX(0);
+			setMoveable(false);
+
+		}
+		else {
+			setMoveable(true);
+			setMoveable(true);
+		}
+	}
+
+	private boolean isColliding(Player player1, Player player2) {
+		return player2.getBounds().intersects(player1.getBounds());
 	}
 
 	/**
@@ -145,22 +157,24 @@ public class BoxFigther extends Applet implements Runnable {
 	 */
 	 public void drawPlayer() {
 		g2d.setTransform(identity);
-		g2d.translate(player1.getX(), player1.getY());
-		g2d.setColor(Color.ORANGE);
-		g2d.fill(player1.getShape());
-		if (drawBounds ) {
+		if (drawBounds) {
 			g2d.setColor(Color.RED);
 			g2d.draw(player1.getBounds());
 		}
+		g2d.translate(player1.getX(), player1.getY());
+		g2d.setColor(Color.ORANGE);
+		g2d.fill(player1.getShape());
+
 		g2d.setTransform(identity2);
+		if (drawBounds) {
+			g2d.setColor(Color.RED);
+			g2d.draw(player2.getBounds());
+		}
 		g2d.translate(player2.getX(), player2.getY());
 		g2d.setColor(Color.CYAN);
 		g2d.fill(player2.getShape());
 		
-		if (drawBounds ) {
-			g2d.setColor(Color.RED);
-			g2d.draw(player2.getBounds());
-		}
+
 	}
 
 	/**
@@ -179,8 +193,8 @@ public class BoxFigther extends Applet implements Runnable {
 		}
 		// wrap for screen left & right
 		if (player.getX() < - player.getWidth())
-			player.setX(height + player.getWidth());
-		else if (player.getX() > height + player.getWidth())
+			player.setX(HEIGHT + player.getWidth());
+		else if (player.getX() > HEIGHT + player.getWidth())
 			player.setX(-player.getWidth());
 		// wrap for screen top bottom
 		if (player.getY() <  0) {
@@ -193,4 +207,8 @@ public class BoxFigther extends Applet implements Runnable {
 	public static double calcAngleMoveY(double moveAngle) {
 		return (double) (Math.cos(moveAngle * Math.PI / 180));
 	}
+	public void setMoveable(boolean move) {
+		this.moveable = move;
+	}
+	public boolean canMove() { return moveable; }
 }

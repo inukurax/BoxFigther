@@ -20,17 +20,16 @@ public  abstract class BaseShape {
 	public void incMoveAngle(double i) { this.moveAngle += i; }
 	public void incX(double i) { this.x += i; }
 	public void incY(double i) { this.y += i; }
+	
 	public void incVelX(double i) {
 		if (this.getVelX() > MAX_SPEED || this.getVelX() <  - MAX_SPEED)
 			return;
 		this.velX += i;
 	}
 	public void incVelY(double i) {
-		if (this.getVelX() > MAX_SPEED || this.getVelX() <  - MAX_SPEED)
-			return;
 		this.velY += i;
 	}
-	
+
 	public Shape getShape() { return shape; }
 	public double getX() { return x; }
 	public double getY() { return y; }
@@ -38,4 +37,8 @@ public  abstract class BaseShape {
 	public double getVelY() { return velY; }
 	public double getMoveAngle() { return moveAngle; }
 	public double getFaceAngle() { return faceAngle; }
+
+	public double calcAngleMoveX(double moveAngle) {
+		return (double) (Math.sin(moveAngle * Math.PI / 180));
+	}
 }

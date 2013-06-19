@@ -9,18 +9,28 @@ import java.awt.image.BufferedImage;
 public class Player extends BaseShape {
 	private int height;
 	private int width;
-
 	private Area area;
-
-	public Player(BufferedImage image) {
+	
+	/**
+	 * Constructor for a player.
+	 * Creates a shape matching an image.
+	 * @param image non null
+	 */
+	public Player(final BufferedImage image) {
 		area = this.getOutline(Color.BLACK, image);
 		this.setShape(area);
 		this.height = this.getShape().getBounds().height;
 		this.width = this.getShape().getBounds().width;
 	}
 	
+	/**
+	 * Returns the a Rectangle that works as the bounds of the Shape.
+	 * @return non null Rectangle
+	 */
 	public Rectangle getBounds() {
-		return area.getBounds();
+		Rectangle k = new Rectangle();
+		k.setBounds((int)getX(), (int)getY(),  area.getBounds().width,  area.getBounds().height);
+		return k;
 	}
 	
 	public int getHeight() {
@@ -31,7 +41,7 @@ public class Player extends BaseShape {
 		return this.width;
 	}
 	
-	public Area getOutline(Color target, BufferedImage bi) {
+	public Area getOutline(Color target,final BufferedImage bi) {
 	    // construct the GeneralPath
 	    GeneralPath gp = new GeneralPath();
 
