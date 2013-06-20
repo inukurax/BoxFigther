@@ -4,20 +4,21 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashSet;
 import java.util.Set;
-import run.BoxFigther;
-import shapes.Player;
+import sprites.ImageEntity;
+import sprites.Sprite;
 
 public class Keys implements KeyListener {
 
+	public static final int JUMP_SPEED = 0;
 	private static final double START_SPEED = 3;
     private final Set<Integer> pressed;
-	private Player player1;
-	private Player player2;
 	private int bottomline;
+	private ImageEntity player1;
+	private ImageEntity player2;
 	
-	public Keys(Player player1, Player player2, int bottomline) {
-		this.player1 = player1;
-		this.player2 = player2;
+	public Keys(Sprite player1, Sprite player2, int bottomline) {
+		this.player1 = player1.entity;
+		this.player2 = player2.entity;
 		this.bottomline = bottomline;
 		this.pressed = new HashSet<Integer>();
 	}
@@ -42,9 +43,9 @@ public class Keys implements KeyListener {
 				player1.setVelX(calcAngleMoveX(player1.getMoveAngle()) * START_SPEED);
 			break;
 		case KeyEvent.VK_UP : // for jumping
-			if (player1.getY() >= bottomline - player1.getHeight()) {
+			if (player1.getY() >= bottomline - player1.height()) {
 				player1.setMoveAngle(player1.getFaceAngle() + 180);
-				player1.incVelY(calcAngleMoveY(player1.getMoveAngle()) * BoxFigther.JUMP_SPEED);
+				player1.incVelY(calcAngleMoveY(player1.getMoveAngle()) * JUMP_SPEED);
 			}
 			break;
 		case KeyEvent.VK_A :
@@ -60,9 +61,9 @@ public class Keys implements KeyListener {
 			player2.incVelX(calcAngleMoveX(player2.getMoveAngle()) * 0.1);
 			break;
 		case KeyEvent.VK_W : // for jumping
-			if (player2.getY() >= bottomline - player2.getHeight()) {
+			if (player2.getY() >= bottomline - player2.height()) {
 				player2.setMoveAngle(player2.getFaceAngle() + 180);
-				player2.incVelY(calcAngleMoveY(player2.getMoveAngle()) * BoxFigther.JUMP_SPEED);
+				player2.incVelY(calcAngleMoveY(player2.getMoveAngle()) * JUMP_SPEED);
 			}
 			break;
 		}		
