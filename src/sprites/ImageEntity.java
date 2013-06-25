@@ -13,7 +13,7 @@ import run.BoxFigther;
  * @author Hjalte Skjold Jørgensen
  * Contact: https://skjoldcode.com - https://github.com/inukurax
  * Email: skjoldborg94@edb.dk - hjalte94@gmail.com
-/*********************************************************
+ *********************************************************
  * Beginning Java Game Programming, 3rd Edition
  * by Jonathan S. Harbour
  * ImageEntity class
