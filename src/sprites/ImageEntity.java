@@ -25,7 +25,7 @@ public class ImageEntity extends BaseGameEntity {
 	protected Graphics2D g2d;
 	
 	// default constructor
-	ImageEntity() {
+	public ImageEntity() {
 		setImage(null);
 		setAlive(true);
 	}

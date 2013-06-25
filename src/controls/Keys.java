@@ -61,9 +61,17 @@ public class Keys implements KeyListener {
 				player1.velocity.x += calcAngleMoveX(player1.moveAngle) * START_SPEED;
 			player1.velocity.x += calcAngleMoveX(player1.moveAngle * 0.1) ;
 			break;
-		case KeyEvent.VK_SPACE : // for hitting
+		case KeyEvent.VK_A : // for hitting
 			player1.velocity.x = 0; 
 			player1.doHit = true;
+			break;
+		case KeyEvent.VK_D : //kicking
+			player1.velocity.x = 0; 
+			player1.doKick = true;
+			break;
+		case KeyEvent.VK_SPACE :
+			player1.doJump = true;
+			player1.velocity.x = 0;
 			break;
 		}		
 	}
@@ -97,7 +105,10 @@ public class Keys implements KeyListener {
 				pressed.add(KeyEvent.VK_RIGHT);
 			break;
 		
-		case KeyEvent.VK_SPACE :
+		case KeyEvent.VK_D :
+			player1.animation = null;
+			break;
+		case KeyEvent.VK_A :
 			player1.animation = null;
 			break;
 		}

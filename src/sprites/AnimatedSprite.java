@@ -11,6 +11,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
+import run.BoxFigther;
+
 /**
  * @author Hjalte Skjold Jørgensen
  * Contact: https://skjoldcode.com - https://github.com/inukurax
@@ -41,6 +43,10 @@ public class AnimatedSprite {
 	public int stanceRight;
 	public boolean doHit = false;
 	public boolean doKick = false;
+	private boolean debug = true;
+	public boolean doJump;
+	public Animation aniJumpRight;
+	public Animation aniJumpLeft;
 	
 	public AnimatedSprite(Graphics2D g2d) {
 		this.g2d = g2d;
@@ -61,7 +67,7 @@ public class AnimatedSprite {
 		moveAngle = 0.0;
 		faceAngle = 0.0;
 		startFrame = 0;
-		animation = new Animation(this, 0, totalFrames);
+		animation = new Animation(this, 0, totalFrames, 2);
 	}
 	
 	public Graphics2D getGraphics() { 
@@ -137,18 +143,31 @@ public class AnimatedSprite {
             else if (faceAngle > 360)
                 faceAngle = rotationRate;
         }  
-        // hitting animation
-        if (aniHitRight != null && isHitting()) {
-        	doHitAni();
+        int line = BoxFigther.HEIGHT - BoxFigther.BOTTOM_LINE - frameHeight;
+        if (position.y <= line - BoxFigther.JUMP_HEIGHT)
+        	velocity.y *= -1;
+        if (position.y >= line - 1)
+        	velocity.y = 0;
+        // jump
+        if (aniJumpRight != null && aniJumpRight != null && isJumping() 
+        		&& position.y == line) {
+            System.out.println(line);
+
+        	doJumpAnimation();
         }
-        
-//        // kicking animation
-//        if (aniKickRight != null && isKicking()) {
-//        	doKickAni();
-//        }
+        // hitting animation
+        else if (aniHitRight != null && aniHitLeft != null && isHitting()) {
+        	doHitAnimation();
+        }
+        // kicking animation
+        else if (aniKickRight != null && aniKickLeft != null && isKicking() ) {
+        	doKickAnimation();
+        }
         
         else if (velocity.x != 0 || velocity.y !=0) {
             //update walk animation
+        	if (velocity.y != 0)
+        		return;
         	if (animation != null)
         		animation.doAnimation();
         }
@@ -158,7 +177,37 @@ public class AnimatedSprite {
         	currentFrame = stanceRight;
         }
 
-    private void doHitAni() {
+    private void doJumpAnimation() {
+    	Animation placeholder = null;  	
+    	switch (animationDirection) {
+    	case 1 :
+    		placeholder = aniJumpRight;
+        	if (currentFrame == placeholder.endFrame - 1) {
+        		this.doJump = false;
+        		velocity.y = -BoxFigther.JUMP_SPEED;
+        		position.y += velocity.y;
+        	}
+    		break;
+    	case -1:
+    		placeholder = aniJumpLeft;    
+        	if (currentFrame == placeholder.startFrame) {
+        		this.doJump = false;
+        		velocity.y = -BoxFigther.JUMP_SPEED;
+        		position.y += velocity.y;
+        	}
+    		break;
+    	default :
+    		break;
+    	}
+    	placeholder.doAnimation();	
+		
+	}
+
+	private boolean isJumping() {
+		return this.doJump;
+	}
+
+	private void doHitAnimation() {
     	Animation placeholder = null;  	
     	switch (animationDirection) {
     	case 1 :
@@ -177,18 +226,18 @@ public class AnimatedSprite {
     	placeholder.doAnimation();		
 	}
 
-	private void doKickAni() {
+	private void doKickAnimation() {
     	Animation placeholder = null;  	
     	switch (animationDirection) {
     	case 1 :
     		placeholder = aniKickRight;
         	if (currentFrame == placeholder.endFrame - 1)
-        		this.doHit = false;
+        		this.doKick= false;
     		break;
     	case -1:
     		placeholder = aniKickLeft;    
         	if (currentFrame == placeholder.startFrame)
-        		this.doHit = false;
+        		this.doKick = false;
     		break;
     	default :
     		break;
@@ -197,12 +246,11 @@ public class AnimatedSprite {
 	}
 
 	private boolean isKicking() {
-		// TODO Auto-generated method stub
 		return doKick;
 	}
 
 	public boolean isHitting() {
-		return doHit ;
+		return doHit;
 	}
 
 	//draw bounding rectangle around sprite
@@ -217,7 +265,6 @@ public class AnimatedSprite {
         //get the current frame
         int frameX = (currentFrame % columns) * frameWidth;
         int frameY = (currentFrame / columns) * frameHeight;
-
         //draw the frame 
         g2d.drawImage(image, position.x, position.y, position.x+frameWidth , position.y+frameHeight, 
             frameX, frameY, frameX+frameWidth, frameY+frameHeight, null);
@@ -252,8 +299,13 @@ public class AnimatedSprite {
 
         boolean cont = false;
         int targetRGB = target.getRGB();
-        for (int xx=xStart; xx<imgWidth; xx++) {
-            for (int yy=yStart; yy<imgHeight; yy++) {
+        for (int xx=xStart; xx< xStart + imgWidth; xx++) {
+        	if (debug)
+        	System.out.println("x: " + xx);
+            for (int yy=yStart; yy< yStart + imgHeight; yy++) {
+            	if (debug)
+            	System.out.println("y: " + yy);
+
                 if (bi.getRGB(xx,yy)==targetRGB) {
                     if (cont) {
                         gp.lineTo(xx,yy);
@@ -271,6 +323,8 @@ public class AnimatedSprite {
             }
             cont = false;
         }
+        debug = false;
+       System.out.println("stop");
         gp.closePath();
 
         // construct the Area from the GP & return it

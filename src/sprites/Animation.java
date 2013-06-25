@@ -5,11 +5,14 @@ public class Animation {
 	public int endFrame;
 	private AnimatedSprite as;
 	public int startFrame;
+	private int frameDelay = 1;
 
-	public Animation (AnimatedSprite animatedSprite, int startFrame, int endFrame) {
+	public Animation (AnimatedSprite animatedSprite, int startFrame,
+			int endFrame, int frameDelay) {
 		as = animatedSprite;
 		this.endFrame = endFrame;
 		this.startFrame = startFrame;
+		this.frameDelay = frameDelay;
 	}
 	
 	public void doAnimation() {			
@@ -21,7 +24,7 @@ public class Animation {
         //update animation
         if (endFrame - startFrame > 1) {
         	as.frameCount++;
-            if (as.frameCount > as.frameDelay) {
+            if (as.frameCount > frameDelay) {
             	as.frameCount = 0;
             	as.currentFrame += as.animationDirection;
                 if (as.currentFrame > endFrame - 1) {
