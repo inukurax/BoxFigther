@@ -8,16 +8,12 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
-import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
-
 import controls.Keys;
 import sprites.AnimatedSprite;
 import sprites.Animation;
-import sprites.ImageEntity;
 
 /**
  * Main class for Box Figther game.
@@ -39,11 +35,13 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 	private BufferedImage backbuffer; // double buffer
 	private Graphics2D g2d; // main drawing object for the backbuffer
 	private AnimatedSprite sprite;
+	private AnimatedSprite sprite2;
+
+	private AnimatedSprite dummy;
 	private int xOnScreen;
 	private int yOnScreen;
 	private BufferedImage ground;
 	private BufferedImage background;
-	private Area area;
 	
 	//SETTINGS//
 	//private boolean drawBounds = true;
@@ -53,7 +51,16 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 		this.setSize(WIDTH, HEIGHT);
 		backbuffer = new BufferedImage(WIDTH,HEIGHT, BufferedImage.TYPE_INT_RGB);
 		g2d = backbuffer.createGraphics();
+		
+		//dummy
+		dummy = new AnimatedSprite(g2d);
+		dummy.load("resources/TargetDummy500x500af3x2.png", 3 , 6 ,500 ,500);
+		dummy.frameDelay = 0;
+		dummy.position = new Point (WIDTH - dummy.frameWidth, HEIGHT - BOTTOM_LINE - dummy.frameHeight);
+		//dummy.testAnimation = true;
+		dummy.animation = new Animation (dummy, 0, 6, 2);
 
+		// player
 		sprite = new AnimatedSprite(g2d);
 		sprite.load("resources/SmileyMan500x500af6x12.png", 6 , 72 ,500 ,500);
 		sprite.frameDelay = 1;
@@ -75,6 +82,25 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 		sprite.stanceLeft = 25;
 		sprite.stanceRight = 24;
 		
+		sprite2 = new AnimatedSprite(g2d);
+		sprite2.load("resources/SmileyMan500x500af6x12.png", 6 , 72 ,500 ,500);
+		sprite2.frameDelay = 1;
+		sprite2.position = new Point (100, HEIGHT - BOTTOM_LINE - sprite2.frameHeight);
+		sprite2.velocity = new Point(0, 0);
+		sprite2.rotationRate = 0.0;
+		
+		sprite2.aniLeft = new Animation (sprite2, 12, 24, 2);
+		sprite2.aniRight = new Animation(sprite2, 0, 12, 2);
+		sprite2.aniHitRight = new Animation(sprite2, 30, 37, hitDelay);
+		sprite2.aniKickRight = new Animation(sprite2, 38, 42, kickDelay);
+		sprite2.aniJumpRight = new Animation(sprite2, 54, 58, 1);
+		sprite2.aniHitLeft = new Animation(sprite2, 42,  49, hitDelay);
+		sprite2.aniKickLeft = new Animation(sprite2, 50, 54, kickDelay);
+		sprite2.aniJumpLeft = new Animation(sprite2, 60, 64, 1);
+		
+		sprite2.stanceLeft = 25;
+		sprite2.stanceRight = 24;
+		
 		try {
 			ground = ImageIO.read(getClass().
 					getClassLoader().getResourceAsStream("resources/ground.jpg"));
@@ -84,7 +110,7 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 			e.printStackTrace();
 		}
 
-		this.addKeyListener(new Keys(sprite));
+		this.addKeyListener(new Keys(sprite, sprite2));
 		this.addMouseMotionListener(this);
 	}
 
@@ -131,7 +157,9 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 		g2d.drawString("Velocity: " + sprite.velocity, 10, 52);
 		g2d.drawString("Animation: " + sprite.currentFrame, 10, 64);
 		g2d.drawString("Direction: " + sprite.animationDirection, 10, 76);
+		dummy.draw();
 		sprite.draw();
+		sprite2.draw();
 	}
 
 	public void stop() {

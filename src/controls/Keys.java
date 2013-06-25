@@ -13,9 +13,11 @@ public class Keys implements KeyListener {
 	private static final double START_SPEED = 6;
     private final Set<Integer> pressed;
 	private AnimatedSprite player1;
+	private AnimatedSprite player2;
 	
-	public Keys(AnimatedSprite player1) {
+	public Keys(AnimatedSprite player1, AnimatedSprite player2) {
 		this.player1 = player1;
+		this.player2 = player2;
 		this.pressed = new HashSet<Integer>();
 	}
 
@@ -61,17 +63,61 @@ public class Keys implements KeyListener {
 				player1.velocity.x += calcAngleMoveX(player1.moveAngle) * START_SPEED;
 			player1.velocity.x += calcAngleMoveX(player1.moveAngle * 0.1) ;
 			break;
-		case KeyEvent.VK_A : // for hitting
+		case KeyEvent.VK_M : // for hitting
 			player1.velocity.x = 0; 
 			player1.doHit = true;
 			break;
-		case KeyEvent.VK_D : //kicking
+		case KeyEvent.VK_N : //kicking
 			player1.velocity.x = 0; 
 			player1.doKick = true;
 			break;
 		case KeyEvent.VK_SPACE :
 			player1.doJump = true;
 			player1.velocity.x = 0;
+			break;
+		case KeyEvent.VK_A :
+			if (player2.isHitting()) {
+				return;
+			}
+			// changes direction 
+			if (player2.animationDirection == 1) {
+				player2.animationDirection = -1;
+				break;
+			}
+				
+			player2.animation = player2.aniLeft;
+			player2.moveAngle = (player2.faceAngle - 90);
+			if (player2.velocity.x >= -1)
+				player2.velocity.x += calcAngleMoveX(player2.moveAngle) * START_SPEED;
+			player2.velocity.x += calcAngleMoveX(player2.moveAngle) * 0.1;
+			break;
+		case KeyEvent.VK_D : 
+			if (player2.isHitting()) {
+				return;
+			}
+			// changes direction 
+			if (player2.animationDirection == -1) {
+				player2.animationDirection = 1;
+				break;
+			}
+				
+			player2.animation = player2.aniRight;
+			player2.moveAngle = (player2.faceAngle + 90);
+			if (player2.velocity.x <= 1)
+				player2.velocity.x += calcAngleMoveX(player2.moveAngle) * START_SPEED;
+			player2.velocity.x += calcAngleMoveX(player2.moveAngle * 0.1) ;
+			break;
+		case KeyEvent.VK_F : // for hitting
+			player2.velocity.x = 0; 
+			player2.doHit = true;
+			break;
+		case KeyEvent.VK_G : //kicking
+			player2.velocity.x = 0; 
+			player2.doKick = true;
+			break;
+		case KeyEvent.VK_W :
+			player2.doJump = true;
+			player2.velocity.x = 0;
 			break;
 		}		
 	}
@@ -105,11 +151,31 @@ public class Keys implements KeyListener {
 				pressed.add(KeyEvent.VK_RIGHT);
 			break;
 		
-		case KeyEvent.VK_D :
+		case KeyEvent.VK_M :
+			player1.animation = null;
+			break;
+		case KeyEvent.VK_N :
 			player1.animation = null;
 			break;
 		case KeyEvent.VK_A :
-			player1.animation = null;
+			if (player2.velocity.x < 0)
+				player2.velocity.x = 0;
+			if (player2.isHitting())
+				pressed.add(KeyEvent.VK_A);
+
+			break;
+		case KeyEvent.VK_D : 
+			if (player2.velocity.x > 0) 
+				player2.velocity.x = 0;
+			if (player2.isHitting())
+				pressed.add(KeyEvent.VK_D);
+			break;
+		
+		case KeyEvent.VK_F :
+			player2.animation = null;
+			break;
+		case KeyEvent.VK_G :
+			player2.animation = null;
 			break;
 		}
     }

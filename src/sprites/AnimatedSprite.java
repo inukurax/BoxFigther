@@ -47,6 +47,7 @@ public class AnimatedSprite {
 	public boolean doJump;
 	public Animation aniJumpRight;
 	public Animation aniJumpLeft;
+	public boolean testAnimation = false;
 	
 	public AnimatedSprite(Graphics2D g2d) {
 		this.g2d = g2d;
@@ -143,6 +144,12 @@ public class AnimatedSprite {
             else if (faceAngle > 360)
                 faceAngle = rotationRate;
         }  
+        
+        if (testAnimation ) {
+        	animation.doAnimation();
+        	return;
+        }
+        
         int line = BoxFigther.HEIGHT - BoxFigther.BOTTOM_LINE - frameHeight;
         if (position.y <= line - BoxFigther.JUMP_HEIGHT)
         	velocity.y *= -1;
@@ -151,8 +158,6 @@ public class AnimatedSprite {
         // jump
         if (aniJumpRight != null && aniJumpRight != null && isJumping() 
         		&& position.y == line) {
-            System.out.println(line);
-
         	doJumpAnimation();
         }
         // hitting animation
@@ -166,7 +171,7 @@ public class AnimatedSprite {
         
         else if (velocity.x != 0 || velocity.y !=0) {
             //update walk animation
-        	if (velocity.y != 0)
+        	if (velocity.y != 0) // no walking in air
         		return;
         	if (animation != null)
         		animation.doAnimation();
@@ -185,7 +190,6 @@ public class AnimatedSprite {
         	if (currentFrame == placeholder.endFrame - 1) {
         		this.doJump = false;
         		velocity.y = -BoxFigther.JUMP_SPEED;
-        		position.y += velocity.y;
         	}
     		break;
     	case -1:
@@ -193,7 +197,6 @@ public class AnimatedSprite {
         	if (currentFrame == placeholder.startFrame) {
         		this.doJump = false;
         		velocity.y = -BoxFigther.JUMP_SPEED;
-        		position.y += velocity.y;
         	}
     		break;
     	default :
@@ -201,10 +204,6 @@ public class AnimatedSprite {
     	}
     	placeholder.doAnimation();	
 		
-	}
-
-	private boolean isJumping() {
-		return this.doJump;
 	}
 
 	private void doHitAnimation() {
@@ -251,6 +250,10 @@ public class AnimatedSprite {
 
 	public boolean isHitting() {
 		return doHit;
+	}
+	
+	private boolean isJumping() {
+		return this.doJump;
 	}
 
 	//draw bounding rectangle around sprite
