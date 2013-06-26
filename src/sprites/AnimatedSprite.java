@@ -167,13 +167,12 @@ public class AnimatedSprite {
         // jump
         else if ((aniJumpRight != null || aniJumpRight != null) && isJumping() 
         		&& position.y == line) {
-        	doJumpAnimation();
+        	doJumpAnimation(); 
         }
-        
-        else if (velocity.x != 0 || velocity.y !=0) {
-            //update walk animation
-        	if (velocity.y != 0) // no walking in air
-        		return;
+        // walking animation 
+        else if (velocity.x != 0 || velocity.y != 0) {
+        	if (velocity.y != 0)
+        		return; // no air walking
         	if (animation != null)
         		animation.doAnimation();
         }
@@ -181,49 +180,44 @@ public class AnimatedSprite {
         	currentFrame = stanceLeft;
         else if (animationDirection == 1)
         	currentFrame = stanceRight;
-        }
+    }
 
     private void doJumpAnimation() {
-    	Animation placeholder = null;  	
     	switch (animationDirection) {
     	case 1 :
-    		placeholder = aniJumpRight;
-        	if (currentFrame == placeholder.endFrame - 1) {
+        	if (currentFrame == aniJumpRight.endFrame - 1) {
         		this.doJump = false;
         		velocity.y = -BoxFigther.JUMP_SPEED;
         	}
+        	aniJumpRight.doAnimation();
     		break;
     	case -1:
-    		placeholder = aniJumpLeft;    
-        	if (currentFrame == placeholder.startFrame) {
+        	if (currentFrame == aniJumpLeft.startFrame) {
         		this.doJump = false;
         		velocity.y = -BoxFigther.JUMP_SPEED;
         	}
+        	aniJumpLeft.doAnimation();
     		break;
     	default :
     		break;
     	}
-    	placeholder.doAnimation();	
 	}
 
 	private void doHitAnimation() {
-    	Animation placeholder = null;  	
     	switch (animationDirection) {
     	case 1 :
-    		placeholder = aniHitRight;
-        	if (currentFrame == placeholder.endFrame - 1)
+        	if (currentFrame == aniHitRight.endFrame - 1)
         		this.doHit = false;
+        	aniHitRight.doAnimation();
     		break;
     	case -1:
-    		placeholder = aniHitLeft;    
-        	if (currentFrame == placeholder.startFrame)
+        	if (currentFrame == aniHitLeft.startFrame)
         		this.doHit = false;
+        	aniHitLeft.doAnimation();
     		break;
     	default :
-    		System.out.println("fail");
     		break;
     	}
-    	placeholder.doAnimation();		
 	}
 
 	private void doKickAnimation() {
@@ -243,7 +237,7 @@ public class AnimatedSprite {
     	}
 	}
 
-	private boolean isKicking() {
+	public boolean isKicking() {
 		return doKick;
 	}
 
@@ -251,7 +245,7 @@ public class AnimatedSprite {
 		return doHit;
 	}
 	
-	private boolean isJumping() {
+	public boolean isJumping() {
 		return this.doJump;
 	}
 

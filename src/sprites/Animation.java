@@ -19,7 +19,7 @@ public class Animation {
 		if (as.currentFrame < startFrame || as.currentFrame > endFrame) {
 			if (as.animationDirection == 1)
 				as.currentFrame = startFrame;
-			else
+			else // expecting animationDirection == -1
 				as.currentFrame = endFrame - 1;
 		}
 
