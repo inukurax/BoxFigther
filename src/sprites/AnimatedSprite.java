@@ -14,7 +14,7 @@ import javax.imageio.ImageIO;
 import run.BoxFigther;
 
 /**
- * @author Hjalte Skjold Jørgensen
+ * @author Hjalte Skjold Jï¿½rgensen
  * Contact: https://skjoldcode.com - https://github.com/inukurax
  * Email: skjoldborg94@edb.dk - hjalte94@gmail.com
  */
@@ -150,23 +150,24 @@ public class AnimatedSprite {
         	return;
         }
         
-        int line = BoxFigther.HEIGHT - BoxFigther.BOTTOM_LINE - frameHeight;
+        int line = BoxFigther.SCR_HEIGHT - BoxFigther.BOTTOM_LINE - frameHeight;
         if (position.y <= line - BoxFigther.JUMP_HEIGHT)
-        	velocity.y *= -1;
+        	velocity.y *= -1; // makes player "fall" down with same speed.
         if (position.y >= line - 1)
         	velocity.y = 0;
-        // jump
-        if (aniJumpRight != null && aniJumpRight != null && isJumping() 
-        		&& position.y == line) {
-        	doJumpAnimation();
-        }
+
         // hitting animation
-        else if (aniHitRight != null && aniHitLeft != null && isHitting()) {
+        if ((aniHitRight != null || aniHitLeft != null) && isHitting()) {
         	doHitAnimation();
         }
         // kicking animation
-        else if (aniKickRight != null && aniKickLeft != null && isKicking() ) {
+        else if ((aniKickRight != null || aniKickLeft != null) && isKicking() ) {
         	doKickAnimation();
+        }
+        // jump
+        else if ((aniJumpRight != null || aniJumpRight != null) && isJumping() 
+        		&& position.y == line) {
+        	doJumpAnimation();
         }
         
         else if (velocity.x != 0 || velocity.y !=0) {
@@ -203,7 +204,6 @@ public class AnimatedSprite {
     		break;
     	}
     	placeholder.doAnimation();	
-		
 	}
 
 	private void doHitAnimation() {
@@ -220,28 +220,27 @@ public class AnimatedSprite {
         		this.doHit = false;
     		break;
     	default :
+    		System.out.println("fail");
     		break;
     	}
     	placeholder.doAnimation();		
 	}
 
 	private void doKickAnimation() {
-    	Animation placeholder = null;  	
     	switch (animationDirection) {
     	case 1 :
-    		placeholder = aniKickRight;
-        	if (currentFrame == placeholder.endFrame - 1)
+        	if (currentFrame == aniKickRight.endFrame - 1)
         		this.doKick= false;
+        	aniKickRight.doAnimation();
     		break;
     	case -1:
-    		placeholder = aniKickLeft;    
-        	if (currentFrame == placeholder.startFrame)
+        	if (currentFrame == aniKickLeft.startFrame)
         		this.doKick = false;
+        	aniKickLeft.doAnimation();
     		break;
     	default :
     		break;
     	}
-    	placeholder.doAnimation();		
 	}
 
 	private boolean isKicking() {

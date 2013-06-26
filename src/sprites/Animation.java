@@ -16,10 +16,12 @@ public class Animation {
 	}
 	
 	public void doAnimation() {			
-		if (as.currentFrame < startFrame && as.animationDirection == 1)
-			as.currentFrame = startFrame;
-		else if (as.currentFrame < startFrame)
-			as.currentFrame = endFrame - 1;
+		if (as.currentFrame < startFrame || as.currentFrame > endFrame) {
+			if (as.animationDirection == 1)
+				as.currentFrame = startFrame;
+			else
+				as.currentFrame = endFrame - 1;
+		}
 
         //update animation
         if (endFrame - startFrame > 1) {

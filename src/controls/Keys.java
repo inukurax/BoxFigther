@@ -75,6 +75,7 @@ public class Keys implements KeyListener {
 			player1.doJump = true;
 			player1.velocity.x = 0;
 			break;
+			//player2
 		case KeyEvent.VK_A :
 			if (player2.isHitting()) {
 				return;
