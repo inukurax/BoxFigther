@@ -32,7 +32,7 @@ public class Keys implements KeyListener {
     	switch (key) {
     	
 		case KeyEvent.VK_LEFT :
-			if (player1.isHitting()) {
+			if (player1.isHitting() || player1.isKicking()) {
 				return;
 			}
 			// changes direction 
@@ -48,7 +48,7 @@ public class Keys implements KeyListener {
 			player1.velocity.x += calcAngleMoveX(player1.moveAngle) * 0.1;
 			break;
 		case KeyEvent.VK_RIGHT : 
-			if (player1.isHitting()) {
+			if (player1.isHitting() || player1.isKicking()) {
 				return;
 			}
 			// changes direction 
@@ -75,8 +75,9 @@ public class Keys implements KeyListener {
 			player1.doJump = true;
 			player1.velocity.x = 0;
 			break;
+			//player2
 		case KeyEvent.VK_A :
-			if (player2.isHitting()) {
+			if (player2.isHitting() || player2.isKicking()) {
 				return;
 			}
 			// changes direction 
@@ -92,7 +93,7 @@ public class Keys implements KeyListener {
 			player2.velocity.x += calcAngleMoveX(player2.moveAngle) * 0.1;
 			break;
 		case KeyEvent.VK_D : 
-			if (player2.isHitting()) {
+			if (player2.isHitting() || player2.isKicking()) {
 				return;
 			}
 			// changes direction 
@@ -140,15 +141,10 @@ public class Keys implements KeyListener {
 		case KeyEvent.VK_LEFT :
 			if (player1.velocity.x < 0)
 				player1.velocity.x = 0;
-			if (player1.isHitting())
-				pressed.add(KeyEvent.VK_LEFT);
-
 			break;
 		case KeyEvent.VK_RIGHT : 
 			if (player1.velocity.x > 0) 
 				player1.velocity.x = 0;
-			if (player1.isHitting())
-				pressed.add(KeyEvent.VK_RIGHT);
 			break;
 		
 		case KeyEvent.VK_M :
@@ -160,17 +156,11 @@ public class Keys implements KeyListener {
 		case KeyEvent.VK_A :
 			if (player2.velocity.x < 0)
 				player2.velocity.x = 0;
-			if (player2.isHitting())
-				pressed.add(KeyEvent.VK_A);
-
 			break;
 		case KeyEvent.VK_D : 
 			if (player2.velocity.x > 0) 
 				player2.velocity.x = 0;
-			if (player2.isHitting())
-				pressed.add(KeyEvent.VK_D);
 			break;
-		
 		case KeyEvent.VK_F :
 			player2.animation = null;
 			break;
@@ -179,11 +169,9 @@ public class Keys implements KeyListener {
 			break;
 		}
     }
-
+    
 	@Override
 	public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

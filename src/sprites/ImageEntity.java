@@ -10,7 +10,7 @@ import run.BoxFigther;
 
 /**
  * Holds all the accessor and mutator methods for the game entities.
- * @author Hjalte Skjold Jørgensen
+ * @author Hjalte Skjold Jï¿½rgensen
  * Contact: https://skjoldcode.com - https://github.com/inukurax
  * Email: skjoldborg94@edb.dk - hjalte94@gmail.com
  *********************************************************
@@ -34,8 +34,8 @@ public class ImageEntity extends BaseGameEntity {
 	
 	public void setImage(Image image) {
 		this.image = image;
-		double x = BoxFigther.WIDTH / 2 - width() / 2;
-		double y = BoxFigther.HEIGHT / 2 - height() / 2;
+		double x = BoxFigther.SCR_WIDTH / 2 - width() / 2;
+		double y = BoxFigther.SCR_HEIGHT / 2 - height() / 2;
 		at = AffineTransform.getTranslateInstance(x, y);
 	}
 
@@ -75,8 +75,8 @@ public class ImageEntity extends BaseGameEntity {
 			e.printStackTrace();
 		}
 		while (getImage().getWidth(null) <= 0); // stays here if this is true.
-		double x = BoxFigther.WIDTH / 2 - width() / 2;
-		double y = BoxFigther.HEIGHT / 2 - height() / 2;
+		double x = BoxFigther.SCR_WIDTH / 2 - width() / 2;
+		double y = BoxFigther.SCR_HEIGHT / 2 - height() / 2;
 		at = AffineTransform.getTranslateInstance(x, y);
 	}
 	

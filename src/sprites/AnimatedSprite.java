@@ -14,7 +14,7 @@ import javax.imageio.ImageIO;
 import run.BoxFigther;
 
 /**
- * @author Hjalte Skjold Jørgensen
+ * @author Hjalte Skjold Jï¿½rgensen
  * Contact: https://skjoldcode.com - https://github.com/inukurax
  * Email: skjoldborg94@edb.dk - hjalte94@gmail.com
  */
@@ -110,9 +110,19 @@ public class AnimatedSprite {
         int y = (int)getCenterY();
         return(new Point(x,y));
     }
+    
+    public Area getArea() {
+    	BufferedImage buff = (BufferedImage) this.image;
+        int frameX = (currentFrame % columns) * frameWidth;
+        int frameY = (currentFrame / columns) * frameHeight;
+        //draw the frame 
+    	BufferedImage currentImage = buff.getSubimage(frameX, frameY, frameWidth, frameHeight);
+    	return this.getOutline(Color.black, currentImage);
+    }
 
     public Rectangle getBounds() {
-        return (new Rectangle((int)position.x, (int)position.y, frameWidth, frameHeight));
+        return (new Rectangle((int)position.x + (frameWidth / 2 - 75), 
+        		(int)position.y + (frameHeight / 2 - 80), 150, 320));
     }
 
     public void load(String filename, int _columns, int _totalFrames,
@@ -150,29 +160,29 @@ public class AnimatedSprite {
         	return;
         }
         
-        int line = BoxFigther.HEIGHT - BoxFigther.BOTTOM_LINE - frameHeight;
+        int line = BoxFigther.SCR_HEIGHT - BoxFigther.BOTTOM_LINE - frameHeight;
         if (position.y <= line - BoxFigther.JUMP_HEIGHT)
-        	velocity.y *= -1;
+        	velocity.y *= -1; // makes player "fall" down with same speed.
         if (position.y >= line - 1)
         	velocity.y = 0;
-        // jump
-        if (aniJumpRight != null && aniJumpRight != null && isJumping() 
-        		&& position.y == line) {
-        	doJumpAnimation();
-        }
+
         // hitting animation
-        else if (aniHitRight != null && aniHitLeft != null && isHitting()) {
+        if ((aniHitRight != null || aniHitLeft != null) && isHitting()) {
         	doHitAnimation();
         }
         // kicking animation
-        else if (aniKickRight != null && aniKickLeft != null && isKicking() ) {
+        else if ((aniKickRight != null || aniKickLeft != null) && isKicking() ) {
         	doKickAnimation();
         }
-        
-        else if (velocity.x != 0 || velocity.y !=0) {
-            //update walk animation
-        	if (velocity.y != 0) // no walking in air
-        		return;
+        // jump
+        else if ((aniJumpRight != null || aniJumpRight != null) && isJumping() 
+        		&& position.y == line) {
+        	doJumpAnimation(); 
+        }
+        // walking animation 
+        else if (velocity.x != 0 || velocity.y != 0) {
+        	if (velocity.y != 0)
+        		return; // no air walking
         	if (animation != null)
         		animation.doAnimation();
         }
@@ -180,71 +190,64 @@ public class AnimatedSprite {
         	currentFrame = stanceLeft;
         else if (animationDirection == 1)
         	currentFrame = stanceRight;
-        }
+    }
 
     private void doJumpAnimation() {
-    	Animation placeholder = null;  	
     	switch (animationDirection) {
     	case 1 :
-    		placeholder = aniJumpRight;
-        	if (currentFrame == placeholder.endFrame - 1) {
+        	if (currentFrame == aniJumpRight.endFrame - 1) {
         		this.doJump = false;
         		velocity.y = -BoxFigther.JUMP_SPEED;
         	}
+        	aniJumpRight.doAnimation();
     		break;
     	case -1:
-    		placeholder = aniJumpLeft;    
-        	if (currentFrame == placeholder.startFrame) {
+        	if (currentFrame == aniJumpLeft.startFrame) {
         		this.doJump = false;
         		velocity.y = -BoxFigther.JUMP_SPEED;
         	}
+        	aniJumpLeft.doAnimation();
     		break;
     	default :
     		break;
     	}
-    	placeholder.doAnimation();	
-		
 	}
 
 	private void doHitAnimation() {
-    	Animation placeholder = null;  	
     	switch (animationDirection) {
     	case 1 :
-    		placeholder = aniHitRight;
-        	if (currentFrame == placeholder.endFrame - 1)
+        	if (currentFrame == aniHitRight.endFrame - 1)
         		this.doHit = false;
+        	aniHitRight.doAnimation();
     		break;
     	case -1:
-    		placeholder = aniHitLeft;    
-        	if (currentFrame == placeholder.startFrame)
+        	if (currentFrame == aniHitLeft.startFrame)
         		this.doHit = false;
+        	aniHitLeft.doAnimation();
     		break;
     	default :
     		break;
     	}
-    	placeholder.doAnimation();		
 	}
 
 	private void doKickAnimation() {
-    	Animation placeholder = null;  	
     	switch (animationDirection) {
     	case 1 :
-    		placeholder = aniKickRight;
-        	if (currentFrame == placeholder.endFrame - 1)
+        	if (currentFrame == aniKickRight.endFrame - 1)
         		this.doKick= false;
+        	aniKickRight.doAnimation();
     		break;
     	case -1:
-    		placeholder = aniKickLeft;    
-        	if (currentFrame == placeholder.startFrame)
+        	if (currentFrame == aniKickLeft.startFrame)
         		this.doKick = false;
+        	aniKickLeft.doAnimation();
     		break;
     	default :
     		break;
     	}
-    	placeholder.doAnimation();		
 	}
 
-	private boolean isKicking() {
+	public boolean isKicking() {
 		return doKick;
 	}
 
@@ -252,7 +255,7 @@ public class AnimatedSprite {
 		return doHit;
 	}
 	
-	private boolean isJumping() {
+	public boolean isJumping() {
 		return this.doJump;
 	}
 
@@ -296,16 +299,16 @@ public class AnimatedSprite {
      * @param imgHeight 
      * @return
      */
-    public Area getOutline(Color target, BufferedImage bi, int xStart, int yStart, int imgWidth, int imgHeight) {
+    public Area getOutline(Color target, BufferedImage bi) {
         // construct the GeneralPath
         GeneralPath gp = new GeneralPath();
 
         boolean cont = false;
         int targetRGB = target.getRGB();
-        for (int xx=xStart; xx< xStart + imgWidth; xx++) {
+        for (int xx=0; xx< bi.getWidth(); xx++) {
         	if (debug)
         	System.out.println("x: " + xx);
-            for (int yy=yStart; yy< yStart + imgHeight; yy++) {
+            for (int yy=0; yy< bi.getHeight(); yy++) {
             	if (debug)
             	System.out.println("y: " + yy);
 
