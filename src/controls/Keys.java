@@ -71,7 +71,7 @@ public class Keys implements KeyListener {
 			player1.velocity.x = 0; 
 			player1.doKick = true;
 			break;
-		case KeyEvent.VK_SPACE :
+		case KeyEvent.VK_UP :
 			player1.doJump = true;
 			player1.velocity.x = 0;
 			break;

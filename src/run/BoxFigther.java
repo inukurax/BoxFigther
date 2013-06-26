@@ -56,7 +56,8 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 		dummy = new AnimatedSprite(g2d);
 		dummy.load("resources/TargetDummy500x500af3x2.png", 3 , 6 ,500 ,500);
 		dummy.frameDelay = 0;
-		dummy.position = new Point (WIDTH - dummy.frameWidth, HEIGHT - BOTTOM_LINE - dummy.frameHeight);
+		dummy.position = new Point ((WIDTH - dummy.frameWidth) / 2, 
+				HEIGHT - BOTTOM_LINE - dummy.frameHeight);
 		//dummy.testAnimation = true;
 		dummy.animation = new Animation (dummy, 0, 6, 2);
 
@@ -64,7 +65,7 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 		sprite = new AnimatedSprite(g2d);
 		sprite.load("resources/SmileyMan500x500af6x12.png", 6 , 72 ,500 ,500);
 		sprite.frameDelay = 1;
-		sprite.position = new Point (300, HEIGHT - BOTTOM_LINE - sprite.frameHeight);
+		sprite.position = new Point (0, HEIGHT - BOTTOM_LINE - sprite.frameHeight);
 		sprite.velocity = new Point(0, 0);
 		sprite.rotationRate = 0.0;
 		
@@ -85,9 +86,10 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 		sprite2 = new AnimatedSprite(g2d);
 		sprite2.load("resources/SmileyMan500x500af6x12.png", 6 , 72 ,500 ,500);
 		sprite2.frameDelay = 1;
-		sprite2.position = new Point (100, HEIGHT - BOTTOM_LINE - sprite2.frameHeight);
+		sprite2.position = new Point (WIDTH - sprite.frameWidth, HEIGHT - BOTTOM_LINE - sprite2.frameHeight);
 		sprite2.velocity = new Point(0, 0);
 		sprite2.rotationRate = 0.0;
+		sprite2.animationDirection = -1;
 		
 		sprite2.aniLeft = new Animation (sprite2, 12, 24, 2);
 		sprite2.aniRight = new Animation(sprite2, 0, 12, 2);
@@ -100,7 +102,7 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 		
 		sprite2.stanceLeft = 25;
 		sprite2.stanceRight = 24;
-		
+				
 		try {
 			ground = ImageIO.read(getClass().
 					getClassLoader().getResourceAsStream("resources/ground.jpg"));
@@ -152,14 +154,21 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 //			sprite.velocity.y *= -2;
 		//debug
 		g2d.drawString("Mouse: " + xOnScreen + "," + yOnScreen, 10, 28);
-
-		g2d.drawString("Position: " + sprite.position, 10, 40);
-		g2d.drawString("Velocity: " + sprite.velocity, 10, 52);
-		g2d.drawString("Animation: " + sprite.currentFrame, 10, 64);
-		g2d.drawString("Direction: " + sprite.animationDirection, 10, 76);
+		g2d.drawString("Position: P1-" + sprite.position + "; P2-" + sprite2.position, 10, 40);
+		g2d.drawString("Velocity: P1-" + sprite.velocity + "; P2-" + sprite2.velocity, 10, 52);
+		g2d.drawString("Animation: P1-" + sprite.currentFrame + "; P2-" + sprite2.currentFrame, 10, 64);
+		g2d.drawString("Direction: P1-" + sprite.animationDirection + "; P2-" + sprite2.animationDirection, 10, 76);
 		dummy.draw();
 		sprite.draw();
+		g2d.drawString("Player1", sprite.position.x + (sprite.frameWidth / 2),
+				sprite.position.y + 160);
+		g2d.drawString("Player1 controls: LEFT-UP-RIGHT-M-N", WIDTH - 400, 28);
 		sprite2.draw();
+		g2d.drawString("Player2", sprite2.position.x + (sprite2.frameWidth / 2),
+				sprite2.position.y + 160);
+		g2d.drawString("Player2 controls: A-W-D-F-G", WIDTH - 400, 40);
+
+
 	}
 
 	public void stop() {
