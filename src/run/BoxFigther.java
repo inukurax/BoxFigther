@@ -28,6 +28,8 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 	public static final int JUMP_HEIGHT = 100;
 	private static final int GROUND_HEIGHT = 40;
 	public static final int JUMP_SPEED = 7; 
+	public static GameState GAME_STATE = GameState.GAME_RUNNING;
+
 	// screen size
 	public static int SCR_HEIGHT = 800;
 	public static int SCR_WIDTH = 1200;
@@ -42,6 +44,7 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 	private int yOnScreen;
 	private BufferedImage ground;
 	private BufferedImage background;
+	private boolean dummyCollision;
 	
 	//SETTINGS//
 	//private boolean drawBounds = true;
@@ -57,9 +60,9 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 		dummy.load("resources/TargetDummy500x500af3x2.png", 3 , 6 ,500 ,500);
 		dummy.frameDelay = 0;
 		dummy.position = new Point ((SCR_WIDTH - dummy.frameWidth) / 2, 
-				HEIGHT - BOTTOM_LINE - dummy.frameHeight);
+				SCR_HEIGHT - BOTTOM_LINE - dummy.frameHeight);
 		//dummy.testAnimation = true;
-		dummy.animation = new Animation (dummy, 0, 6, 2);
+		dummy.animation = new Animation (dummy, 0, 6, 4);
 
 		// player
 		sprite = new AnimatedSprite(g2d);
@@ -132,7 +135,11 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 			} catch (InterruptedException e) {
 					e.printStackTrace();
 			}
-			gameUpdate();
+			if (GAME_STATE == GameState.GAME_RUNNING)
+				gameUpdate();
+			else
+				g2d.drawString("PAUSE", SCR_WIDTH / 2, SCR_HEIGHT / 2);
+
             repaint();
 		}
 	}
@@ -146,23 +153,38 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 				SCR_WIDTH, SCR_HEIGHT - BOTTOM_LINE - GROUND_HEIGHT, null);
 		//g2d.drawImage(background, 0, 0, WIDTH, HEIGHT - BOTTOM_LINE - GROUND_HEIGHT, null);
 		sprite.drawBounds(Color.RED);
+		dummy.drawBounds(Color.BLUE);
+		sprite2.drawBounds(Color.GREEN);
+
+
 		//debug
+		g2d.setColor(Color.RED);
+
 		g2d.drawString("Mouse: " + xOnScreen + "," + yOnScreen, 10, 28);
 		g2d.drawString("Position: P1-" + sprite.position + "; P2-" + sprite2.position, 10, 40);
 		g2d.drawString("Velocity: P1-" + sprite.velocity + "; P2-" + sprite2.velocity, 10, 52);
 		g2d.drawString("Animation: P1-" + sprite.currentFrame + "; P2-" + sprite2.currentFrame, 10, 64);
 		g2d.drawString("Direction: P1-" + sprite.animationDirection + "; P2-" + sprite2.animationDirection, 10, 76);
+		g2d.drawString("Dummy collision: " + dummyCollision, 10, 88);
+
+		
 		g2d.drawString("Player1", sprite.position.x + (sprite.frameWidth / 2),
 				sprite.position.y + 160);
-		g2d.drawString("Player1 controls: LEFT-UP-RIGHT-M-N", WIDTH - 400, 28);
+		g2d.drawString("Player1 controls: LEFT-UP-RIGHT-M-N", SCR_WIDTH - 400, 28);
 		g2d.drawString("Player2", sprite2.position.x + (sprite2.frameWidth / 2),
 				sprite2.position.y + 160);
-		g2d.drawString("Player2 controls: A-W-D-F-G", WIDTH - 400, 40);
-
+		g2d.drawString("Player2 controls: A-W-D-F-G", SCR_WIDTH - 400, 40);
 		dummy.draw();
 		sprite.draw();
 		sprite2.draw();
+		checkCollision();
+	}
 
+	private void checkCollision() {
+		if (sprite.collidesWith(dummy) || sprite2.collidesWith(dummy))
+			dummyCollision = true;
+		else
+			dummyCollision = false;
 	}
 
 	public void stop() {
@@ -187,4 +209,8 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 		this.yOnScreen = e.getY();
 		this.xOnScreen = e.getX();
 	} 
+	
+	public enum GameState { 
+		GAME_RUNNING, GAME_OVER, GAME_PAUSE;
+	}
 }
