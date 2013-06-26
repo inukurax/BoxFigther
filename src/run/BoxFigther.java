@@ -139,7 +139,6 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 		// clears the background
 		g2d.setColor(Color.WHITE);
 		g2d.fill(new Rectangle(0, 0, SCR_WIDTH, SCR_HEIGHT));
-
 		// draw ground
 		g2d.drawImage(ground, 0, SCR_HEIGHT - BOTTOM_LINE - 60 , 
 				SCR_WIDTH, SCR_HEIGHT - BOTTOM_LINE - GROUND_HEIGHT, null);

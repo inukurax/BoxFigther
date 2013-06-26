@@ -110,9 +110,19 @@ public class AnimatedSprite {
         int y = (int)getCenterY();
         return(new Point(x,y));
     }
+    
+    public Area getArea() {
+    	BufferedImage buff = (BufferedImage) this.image;
+        int frameX = (currentFrame % columns) * frameWidth;
+        int frameY = (currentFrame / columns) * frameHeight;
+        //draw the frame 
+    	BufferedImage currentImage = buff.getSubimage(frameX, frameY, frameWidth, frameHeight);
+    	return this.getOutline(Color.black, currentImage);
+    }
 
     public Rectangle getBounds() {
-        return (new Rectangle((int)position.x, (int)position.y, frameWidth, frameHeight));
+        return (new Rectangle((int)position.x + (frameWidth / 2 - 75), 
+        		(int)position.y + (frameHeight / 2 - 80), 150, 320));
     }
 
     public void load(String filename, int _columns, int _totalFrames,
@@ -289,16 +299,16 @@ public class AnimatedSprite {
      * @param imgHeight 
      * @return
      */
-    public Area getOutline(Color target, BufferedImage bi, int xStart, int yStart, int imgWidth, int imgHeight) {
+    public Area getOutline(Color target, BufferedImage bi) {
         // construct the GeneralPath
         GeneralPath gp = new GeneralPath();
 
         boolean cont = false;
         int targetRGB = target.getRGB();
-        for (int xx=xStart; xx< xStart + imgWidth; xx++) {
+        for (int xx=0; xx< bi.getWidth(); xx++) {
         	if (debug)
         	System.out.println("x: " + xx);
-            for (int yy=yStart; yy< yStart + imgHeight; yy++) {
+            for (int yy=0; yy< bi.getHeight(); yy++) {
             	if (debug)
             	System.out.println("y: " + yy);
 
