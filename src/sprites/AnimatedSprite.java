@@ -12,6 +12,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import run.BoxFigther;
+import run.Camera;
 
 /**
  * @author Hjalte Skjold J�rgensen
@@ -27,8 +28,8 @@ public class AnimatedSprite {
 	public Point velocity;
 	public double rotationRate;
 	public double moveAngle, faceAngle;
-	public int currentState;
-	public int currentFrame, totalFrames, animationDirection;
+	private int currentFrame;
+	public int totalFrames, animationDirection;
 	public int frameCount, frameDelay;
 	public int frameWidth, frameHeight, columns;
 	public int startFrame;
@@ -48,6 +49,8 @@ public class AnimatedSprite {
 	public Animation aniJumpRight;
 	public Animation aniJumpLeft;
 	public boolean testAnimation = false;
+	private Area area;
+	public Camera camera;
 	
 	public AnimatedSprite(Graphics2D g2d) {
 		this.g2d = g2d;
@@ -56,8 +59,7 @@ public class AnimatedSprite {
 		position = new Point(0, 0);
 		velocity = new Point(0, 0);
 		rotationRate = 0.0;
-		currentState = 0;
-		currentFrame = 0;
+		setCurrentFrame(0);
 		totalFrames = 1;
 		animationDirection = 1;
 		frameCount = 0;
@@ -112,17 +114,26 @@ public class AnimatedSprite {
     }
     
     public Area getArea() {
+    	if (area != null)
+    		return this.area;
     	BufferedImage buff = (BufferedImage) this.image;
-        int frameX = (currentFrame % columns) * frameWidth;
-        int frameY = (currentFrame / columns) * frameHeight;
+        int frameX = (getCurrentFrame() % columns) * frameWidth;
+        int frameY = (getCurrentFrame() / columns) * frameHeight;
         //draw the frame 
     	BufferedImage currentImage = buff.getSubimage(frameX, frameY, frameWidth, frameHeight);
-    	return this.getOutline(Color.black, currentImage);
+    	this.area = this.getOutline(Color.black, currentImage);
+    	return this.area;
     }
 
     public Rectangle getBounds() {
-        return (new Rectangle((int)position.x + (frameWidth / 2 - 75), 
-        		(int)position.y + (frameHeight / 2 - 80), 150, 320));
+        Point pos = getScrPosition();
+        return (new Rectangle((int)pos.x, (int)pos.y , frameWidth, frameHeight));
+    }
+    
+    public Point getScrPosition() {
+        Point cam = camera.getPlayerPoint();
+        Point pos = new Point(position.x - cam.x, position.y - cam.y);
+        return pos;
     }
 
     public void load(String filename, int _columns, int _totalFrames,
@@ -142,10 +153,13 @@ public class AnimatedSprite {
     }
 
     protected void update() {
+
         //update position
         position.x += velocity.x;
         position.y += velocity.y;
-       
+    	if (position.x < 0 || position.x > camera.getWorldWidth() - frameWidth) {
+   		 position.x -= velocity.x;
+   	}
         //update rotation
         if (rotationRate > 0.0) {
             faceAngle += rotationRate;
@@ -187,22 +201,22 @@ public class AnimatedSprite {
         		animation.doAnimation();
         }
         else if (animationDirection == -1)
-        	currentFrame = stanceLeft;
+        	setCurrentFrame(stanceLeft);
         else if (animationDirection == 1)
-        	currentFrame = stanceRight;
+        	setCurrentFrame(stanceRight);
     }
 
     private void doJumpAnimation() {
     	switch (animationDirection) {
     	case 1 :
-        	if (currentFrame == aniJumpRight.endFrame - 1) {
+        	if (getCurrentFrame() == aniJumpRight.endFrame - 1) {
         		this.doJump = false;
         		velocity.y = -BoxFigther.JUMP_SPEED;
         	}
         	aniJumpRight.doAnimation();
     		break;
     	case -1:
-        	if (currentFrame == aniJumpLeft.startFrame) {
+        	if (getCurrentFrame() == aniJumpLeft.startFrame) {
         		this.doJump = false;
         		velocity.y = -BoxFigther.JUMP_SPEED;
         	}
@@ -216,12 +230,12 @@ public class AnimatedSprite {
 	private void doHitAnimation() {
     	switch (animationDirection) {
     	case 1 :
-        	if (currentFrame == aniHitRight.endFrame - 1)
+        	if (getCurrentFrame() == aniHitRight.endFrame - 1)
         		this.doHit = false;
         	aniHitRight.doAnimation();
     		break;
     	case -1:
-        	if (currentFrame == aniHitLeft.startFrame)
+        	if (getCurrentFrame() == aniHitLeft.startFrame)
         		this.doHit = false;
         	aniHitLeft.doAnimation();
     		break;
@@ -233,12 +247,12 @@ public class AnimatedSprite {
 	private void doKickAnimation() {
     	switch (animationDirection) {
     	case 1 :
-        	if (currentFrame == aniKickRight.endFrame - 1)
+        	if (getCurrentFrame() == aniKickRight.endFrame - 1)
         		this.doKick= false;
         	aniKickRight.doAnimation();
     		break;
     	case -1:
-        	if (currentFrame == aniKickLeft.startFrame)
+        	if (getCurrentFrame() == aniKickLeft.startFrame)
         		this.doKick = false;
         	aniKickLeft.doAnimation();
     		break;
@@ -267,16 +281,23 @@ public class AnimatedSprite {
 
     public void draw() {
         update();
-        
+        if (!isOnScreen())
+        	return;
         //get the current frame
-        int frameX = (currentFrame % columns) * frameWidth;
-        int frameY = (currentFrame / columns) * frameHeight;
+        int frameX = (getCurrentFrame() % columns) * frameWidth;
+        int frameY = (getCurrentFrame() / columns) * frameHeight;
         //draw the frame 
-        g2d.drawImage(image, position.x, position.y, position.x+frameWidth , position.y+frameHeight, 
+        Point pos = getScrPosition();
+        g2d.drawImage(image, pos.x, pos.y, pos.x+frameWidth , pos.y+frameHeight, 
             frameX, frameY, frameX+frameWidth, frameY+frameHeight, null);
     }
 
-    //check for collision with a rectangular shape
+    private boolean isOnScreen() {
+		return getScrPosition().x >= -frameWidth && 
+				getScrPosition().x <= BoxFigther.SCR_WIDTH + frameWidth;
+	}
+
+	//check for collision with a rectangular shape
     public boolean collidesWith(Rectangle rect) {
         return (rect.intersects(getBounds()));
     }
@@ -306,12 +327,7 @@ public class AnimatedSprite {
         boolean cont = false;
         int targetRGB = target.getRGB();
         for (int xx=0; xx< bi.getWidth(); xx++) {
-        	if (debug)
-        	System.out.println("x: " + xx);
             for (int yy=0; yy< bi.getHeight(); yy++) {
-            	if (debug)
-            	System.out.println("y: " + yy);
-
                 if (bi.getRGB(xx,yy)==targetRGB) {
                     if (cont) {
                         gp.lineTo(xx,yy);
@@ -329,11 +345,17 @@ public class AnimatedSprite {
             }
             cont = false;
         }
-        debug = false;
-       System.out.println("stop");
         gp.closePath();
 
         // construct the Area from the GP & return it
         return new Area(gp);
     }
+
+	public int getCurrentFrame() {
+		return currentFrame;
+	}
+
+	public void setCurrentFrame(int currentFrame) {
+		this.currentFrame = currentFrame;
+	}
 }

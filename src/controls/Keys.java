@@ -50,7 +50,6 @@ public class Keys implements KeyListener {
 				player1.animationDirection = -1;
 				break;
 			}
-				
 			player1.animation = player1.aniLeft;
 			player1.moveAngle = (player1.faceAngle - 90);
 			if (player1.velocity.x >= -1)
