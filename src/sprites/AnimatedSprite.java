@@ -98,18 +98,12 @@ public class AnimatedSprite {
         else
             return 0;
     }
-
-    public double getCenterX() {
-        return position.x + getWidth() / 2;
-    }
-    
-    public double getCenterY() {
-        return position.y + getHeight() / 2;
-    }
     
     public Point getCenter() {
-        int x = (int)getCenterX();
-        int y = (int)getCenterY();
+        Point pos = getScrPosition();
+
+        int x = pos.x + frameWidth / 2;
+        int y = pos.y + frameHeight / 2;
         return(new Point(x,y));
     }
     
@@ -127,7 +121,10 @@ public class AnimatedSprite {
 
     public Rectangle getBounds() {
         Point pos = getScrPosition();
-        return (new Rectangle((int)pos.x, (int)pos.y , frameWidth, frameHeight));
+		Rectangle r = getArea().getBounds();
+
+        r = new Rectangle((int) (getCenter().x - (r.width / 2)), position.y, r.width, frameHeight);
+        return (r);
     }
     
     public Point getScrPosition() {

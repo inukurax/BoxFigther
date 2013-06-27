@@ -173,8 +173,6 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 		sprite.drawBounds(Color.RED);
 		dummy.drawBounds(Color.BLUE);
 		sprite2.drawBounds(Color.GREEN);
-		Rectangle r = dummy.getArea().getBounds();
-		g2d.draw(new Rectangle(dummy.position.x, dummy.position.y, r.width, r.height));
 
 		//debug
 		g2d.setColor(Color.RED);
