@@ -4,6 +4,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashSet;
 import java.util.Set;
+
+import run.BoxFigther;
+import run.BoxFigther.GameState;
 import sprites.AnimatedSprite;
 
 
@@ -22,7 +25,14 @@ public class Keys implements KeyListener {
 	}
 
 	@Override
-	public void keyPressed(KeyEvent k) {
+	public void keyPressed(KeyEvent k)  {
+		if (BoxFigther.GAME_STATE != GameState.GAME_PAUSE && k.getKeyCode() == KeyEvent.VK_ESCAPE)
+			BoxFigther.GAME_STATE = GameState.GAME_PAUSE;
+		else if (BoxFigther.GAME_STATE == GameState.GAME_PAUSE && k.getKeyCode() == KeyEvent.VK_ESCAPE)
+			BoxFigther.GAME_STATE = GameState.GAME_RUNNING;
+
+		if (BoxFigther.GAME_STATE != GameState.GAME_RUNNING)
+			return;
         pressed.add(k.getKeyCode());
         for (Integer key : pressed)
         	checkKeys(key);
@@ -40,7 +50,6 @@ public class Keys implements KeyListener {
 				player1.animationDirection = -1;
 				break;
 			}
-				
 			player1.animation = player1.aniLeft;
 			player1.moveAngle = (player1.faceAngle - 90);
 			if (player1.velocity.x >= -1)
@@ -71,7 +80,7 @@ public class Keys implements KeyListener {
 			player1.velocity.x = 0; 
 			player1.doKick = true;
 			break;
-		case KeyEvent.VK_SPACE :
+		case KeyEvent.VK_UP :
 			player1.doJump = true;
 			player1.velocity.x = 0;
 			break;

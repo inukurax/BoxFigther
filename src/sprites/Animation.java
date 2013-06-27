@@ -16,11 +16,11 @@ public class Animation {
 	}
 	
 	public void doAnimation() {			
-		if (as.currentFrame < startFrame || as.currentFrame > endFrame) {
+		if (as.getCurrentFrame() < startFrame || as.getCurrentFrame() > endFrame) {
 			if (as.animationDirection == 1)
-				as.currentFrame = startFrame;
+				as.setCurrentFrame(startFrame);
 			else // expecting animationDirection == -1
-				as.currentFrame = endFrame - 1;
+				as.setCurrentFrame(endFrame - 1);
 		}
 
         //update animation
@@ -28,12 +28,13 @@ public class Animation {
         	as.frameCount++;
             if (as.frameCount > frameDelay) {
             	as.frameCount = 0;
-            	as.currentFrame += as.animationDirection;
-                if (as.currentFrame > endFrame - 1) {
-                	as.currentFrame = startFrame;
+            	as.setCurrentFrame(as.getCurrentFrame()
+						+ as.animationDirection);
+                if (as.getCurrentFrame() > endFrame - 1) {
+                	as.setCurrentFrame(startFrame);
                 }
-                else if (as.currentFrame < startFrame) {
-                	as.currentFrame = endFrame - 1;
+                else if (as.getCurrentFrame() < startFrame) {
+                	as.setCurrentFrame(endFrame - 1);
                 }
             }
         }
