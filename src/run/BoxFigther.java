@@ -55,7 +55,7 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 	// initializes the applet
 	public void init() {
 		this.setSize(SCR_WIDTH, SCR_HEIGHT);
-		camera = new Camera (2000, 3000);
+		camera = new Camera (2000, 800);
 		backbuffer = new BufferedImage(SCR_WIDTH,SCR_HEIGHT, BufferedImage.TYPE_INT_RGB);
 		g2d = backbuffer.createGraphics();
 		
@@ -119,7 +119,7 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 			ground = ImageIO.read(getClass().
 					getClassLoader().getResourceAsStream("resources/ground.jpg"));
 			background = ImageIO.read(getClass().
-					getClassLoader().getResourceAsStream("resources/background.jpg"));
+					getClassLoader().getResourceAsStream("resources/background.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -165,10 +165,11 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 		// clears the background
 		g2d.setColor(Color.WHITE);
 		g2d.fill(new Rectangle(0, 0, SCR_WIDTH, SCR_HEIGHT));
-		// draw ground
-		g2d.drawImage(ground, 0, SCR_HEIGHT - BOTTOM_LINE - 60 , 
-				SCR_WIDTH, SCR_HEIGHT - BOTTOM_LINE - GROUND_HEIGHT, null);
-		//g2d.drawImage(background, 0, 0, SCR_WIDTH, SCR_HEIGHT - BOTTOM_LINE - GROUND_HEIGHT, null);
+		// background
+		Point pos = camera.getPlayerPoint();
+		g2d.drawImage(background, 0, 0, SCR_WIDTH, SCR_HEIGHT,pos.x, pos.y, pos.x+SCR_WIDTH , pos.y+SCR_HEIGHT , null);
+
+		
 		sprite.drawBounds(Color.RED);
 		dummy.drawBounds(Color.BLUE);
 		sprite2.drawBounds(Color.GREEN);
