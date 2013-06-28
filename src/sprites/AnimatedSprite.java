@@ -34,17 +34,16 @@ public class AnimatedSprite {
 	public int frameWidth, frameHeight, columns;
 	public int startFrame;
 	public Animation animation;
-	public Animation aniLeft;
-	public Animation aniRight;
-	public Animation aniHitLeft;
-	public Animation aniHitRight;
-	public Animation aniKickRight;
-	public Animation aniKickLeft;
+	public Animation animationWalkLeft;
+	public Animation animationWalkRight;
+	public Animation animationHitLeft;
+	public Animation animationHitRight;
+	public Animation animationKickRight;
+	public Animation animationKickLeft;
 	public int stanceLeft;
 	public int stanceRight;
 	public boolean doHit = false;
 	public boolean doKick = false;
-	private boolean debug = true;
 	public boolean doJump;
 	public Animation aniJumpRight;
 	public Animation aniJumpLeft;
@@ -83,6 +82,8 @@ public class AnimatedSprite {
 	
 	public void setImage(Image image) { 
 		this.image = image;
+		this.getArea(); // stupid fix to make sure area is loaded first
+
 	}
 	
     public int getWidth() {
@@ -101,7 +102,6 @@ public class AnimatedSprite {
     
     public Point getCenter() {
         Point pos = getScrPosition();
-
         int x = pos.x + frameWidth / 2;
         int y = pos.y + frameHeight / 2;
         return(new Point(x,y));
@@ -111,18 +111,16 @@ public class AnimatedSprite {
     	if (area != null)
     		return this.area;
     	BufferedImage buff = (BufferedImage) this.image;
-        int frameX = (getCurrentFrame() % columns) * frameWidth;
-        int frameY = (getCurrentFrame() / columns) * frameHeight;
+//        int frameX = (currentFrame % columns) * frameWidth;
+//        int frameY = (currentFrame / columns) * frameHeight;
         //draw the frame 
-    	BufferedImage currentImage = buff.getSubimage(frameX, frameY, frameWidth, frameHeight);
+    	BufferedImage currentImage = buff.getSubimage(0, 0, frameWidth, frameHeight);
     	this.area = this.getOutline(Color.black, currentImage);
     	return this.area;
     }
 
     public Rectangle getBounds() {
-        Point pos = getScrPosition();
 		Rectangle r = getArea().getBounds();
-
         r = new Rectangle((int) (getCenter().x - (r.width / 2)), position.y, r.width, frameHeight);
         return (r);
     }
@@ -178,11 +176,11 @@ public class AnimatedSprite {
         	velocity.y = 0;
 
         // hitting animation
-        if ((aniHitRight != null || aniHitLeft != null) && isHitting()) {
+        if ((animationHitRight != null || animationHitLeft != null) && isHitting()) {
         	doHitAnimation();
         }
         // kicking animation
-        else if ((aniKickRight != null || aniKickLeft != null) && isKicking() ) {
+        else if ((animationKickRight != null || animationKickLeft != null) && isKicking() ) {
         	doKickAnimation();
         }
         // jump
@@ -227,14 +225,14 @@ public class AnimatedSprite {
 	private void doHitAnimation() {
     	switch (animationDirection) {
     	case 1 :
-        	if (getCurrentFrame() == aniHitRight.endFrame - 1)
+        	if (getCurrentFrame() == animationHitRight.endFrame - 1)
         		this.doHit = false;
-        	aniHitRight.doAnimation();
+        	animationHitRight.doAnimation();
     		break;
     	case -1:
-        	if (getCurrentFrame() == aniHitLeft.startFrame)
+        	if (getCurrentFrame() == animationHitLeft.startFrame)
         		this.doHit = false;
-        	aniHitLeft.doAnimation();
+        	animationHitLeft.doAnimation();
     		break;
     	default :
     		break;
@@ -244,14 +242,14 @@ public class AnimatedSprite {
 	private void doKickAnimation() {
     	switch (animationDirection) {
     	case 1 :
-        	if (getCurrentFrame() == aniKickRight.endFrame - 1)
+        	if (getCurrentFrame() == animationKickRight.endFrame - 1)
         		this.doKick= false;
-        	aniKickRight.doAnimation();
+        	animationKickRight.doAnimation();
     		break;
     	case -1:
-        	if (getCurrentFrame() == aniKickLeft.startFrame)
+        	if (getCurrentFrame() == animationKickLeft.startFrame)
         		this.doKick = false;
-        	aniKickLeft.doAnimation();
+        	animationKickLeft.doAnimation();
     		break;
     	default :
     		break;
