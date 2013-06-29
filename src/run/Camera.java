@@ -1,6 +1,8 @@
 package run;
 import java.awt.Point;
 
+import network.BoxFigther;
+
 import sprites.AnimatedSprite;
 
 
@@ -11,9 +13,7 @@ public class Camera {
 	private int offsetMaxY;
 	private int offsetMinX;
 	private int offsetMinY;
-	private int playerX;
 	private AnimatedSprite player;
-	private int playerY;
 	private int worldWidth;
 	public int getWorldWidth() {
 		return worldWidth;
@@ -40,8 +40,6 @@ public class Camera {
 		offsetMaxY = WORLD_SIZE_Y - BoxFigther.SCR_HEIGHT;
 		offsetMinX = 0;
 		offsetMinY = 0;
-		this.playerX = 0;
-		this.playerY = 0;
 	}
 	
 	public Point getPlayerPoint() {

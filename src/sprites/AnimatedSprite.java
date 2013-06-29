@@ -11,7 +11,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-import run.BoxFigther;
+import network.BoxFigther;
+
 import run.Camera;
 
 /**
@@ -44,7 +45,6 @@ public class AnimatedSprite {
 	public int stanceRight;
 	public boolean doHit = false;
 	public boolean doKick = false;
-	private boolean debug = true;
 	public boolean doJump;
 	public Animation aniJumpRight;
 	public Animation aniJumpLeft;
@@ -52,8 +52,7 @@ public class AnimatedSprite {
 	private Area area;
 	public Camera camera;
 	
-	public AnimatedSprite(Graphics2D g2d) {
-		this.g2d = g2d;
+	public AnimatedSprite() {
 		image = null;
 		alive = true;
 		position = new Point(0, 0);
@@ -71,14 +70,6 @@ public class AnimatedSprite {
 		faceAngle = 0.0;
 		startFrame = 0;
 		animation = new Animation(this, 0, totalFrames, 2);
-	}
-	
-	public Graphics2D getGraphics() { 
-		return g2d;
-	}
-	
-	public void setGraphics(Graphics2D g2d) {
-		this.g2d = g2d;
 	}
 	
 	public void setImage(Image image) { 
@@ -120,9 +111,7 @@ public class AnimatedSprite {
     }
 
     public Rectangle getBounds() {
-        Point pos = getScrPosition();
 		Rectangle r = getArea().getBounds();
-
         r = new Rectangle((int) (getCenter().x - (r.width / 2)), position.y, r.width, frameHeight);
         return (r);
     }
@@ -271,12 +260,12 @@ public class AnimatedSprite {
 	}
 
 	//draw bounding rectangle around sprite
-    public void drawBounds(Color c) {
+    public void drawBounds(Color c, Graphics2D g2d) {
         g2d.setColor(c);
         g2d.draw(getBounds());
     }
 
-    public void draw() {
+    public void draw(Graphics2D g2d) {
         update();
         if (!isOnScreen())
         	return;

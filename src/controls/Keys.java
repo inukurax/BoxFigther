@@ -5,8 +5,9 @@ import java.awt.event.KeyListener;
 import java.util.HashSet;
 import java.util.Set;
 
-import run.BoxFigther;
-import run.BoxFigther.GameState;
+import network.BoxFigther;
+import network.BoxFigther.GameState;
+
 import sprites.AnimatedSprite;
 
 

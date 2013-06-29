@@ -1,8 +1,7 @@
-package run;
+package network;
 
 import java.applet.Applet;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -13,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import controls.Keys;
+import run.Camera;
 import sprites.AnimatedSprite;
 import sprites.Animation;
 
@@ -27,7 +27,6 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 	public static final int BOTTOM_LINE = 50;
 	// jump height in pixels
 	public static final int JUMP_HEIGHT = 100;
-	private static final int GROUND_HEIGHT = 40;
 	public static final int JUMP_SPEED = 7; 
 	public static GameState GAME_STATE = GameState.GAME_RUNNING;
 
@@ -43,7 +42,6 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 	private AnimatedSprite dummy;
 	private int xOnScreen;
 	private int yOnScreen;
-	private BufferedImage ground;
 	private BufferedImage background;
 	private boolean dummyCollision;
 	private int dummyHitCount;
@@ -60,7 +58,7 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 		g2d = backbuffer.createGraphics();
 		
 		//dummy
-		dummy = new AnimatedSprite(g2d);
+		dummy = new AnimatedSprite();
 		dummy.load("resources/TargetDummy500x500af3x2.png", 3 , 6 ,500 ,500);
 		dummy.frameDelay = 0;
 		dummy.position = new Point ((SCR_WIDTH - dummy.frameWidth) / 2, 
@@ -69,7 +67,7 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 		dummy.animation = new Animation (dummy, 0, 6, 4);
 		dummy.camera = camera;
 		// player
-		sprite = new AnimatedSprite(g2d);
+		sprite = new AnimatedSprite();
 		camera.setPlayer(sprite);
 		sprite.load("resources/SpriteSmiley350x350af6x10.png", 6 , 60 ,350 ,350);
 		sprite.frameDelay = 1;
@@ -93,7 +91,7 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 		sprite.aniJumpLeft = new Animation(sprite, 54, 58, 1);
 		
 		
-		sprite2 = new AnimatedSprite(g2d);
+		sprite2 = new AnimatedSprite();
 		sprite2.camera = camera;
 		sprite2.load("resources/SpriteSmiley350x350af6x10.png", 6 , 60 ,350 ,350);
 		sprite2.frameDelay = 1;
@@ -116,8 +114,6 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 		sprite2.aniJumpLeft = new Animation(sprite2, 54, 58, 1);
 				
 		try {
-			ground = ImageIO.read(getClass().
-					getClassLoader().getResourceAsStream("resources/ground.jpg"));
 			background = ImageIO.read(getClass().
 					getClassLoader().getResourceAsStream("resources/background.png"));
 		} catch (IOException e) {
@@ -170,9 +166,9 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 		g2d.drawImage(background, 0, 0, SCR_WIDTH, SCR_HEIGHT,pos.x, pos.y, pos.x+SCR_WIDTH , pos.y+SCR_HEIGHT , null);
 
 		
-		sprite.drawBounds(Color.RED);
-		dummy.drawBounds(Color.BLUE);
-		sprite2.drawBounds(Color.GREEN);
+		sprite.drawBounds(Color.RED,g2d);
+		dummy.drawBounds(Color.BLUE,g2d);
+		sprite2.drawBounds(Color.GREEN,g2d);
 
 		//debug
 		g2d.setColor(Color.RED);
@@ -193,9 +189,9 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 				sprite2.getScrPosition().y);
 		g2d.drawString("Player2 controls: A-W-D-F-G", SCR_WIDTH - 400, 40);
 		g2d.drawString("Pause: ESCAPE", SCR_WIDTH - 400, 12);
-		dummy.draw();
-		sprite.draw();
-		sprite2.draw();
+		dummy.draw(g2d);
+		sprite.draw(g2d);
+		sprite2.draw(g2d);
 		checkCollision();
 	}
 
