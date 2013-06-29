@@ -5,8 +5,8 @@ import java.awt.event.KeyListener;
 import java.util.HashSet;
 import java.util.Set;
 
-import network.BoxFigther;
-import network.BoxFigther.GameState;
+import run.BoxFigther;
+import run.BoxFigther.GameState;
 
 import sprites.AnimatedSprite;
 
@@ -51,7 +51,7 @@ public class Keys implements KeyListener {
 				player1.animationDirection = -1;
 				break;
 			}
-			player1.animation = player1.aniLeft;
+			player1.animation = player1.animationWalkLeft;
 			player1.moveAngle = (player1.faceAngle - 90);
 			if (player1.velocity.x >= -1)
 				player1.velocity.x += calcAngleMoveX(player1.moveAngle) * START_SPEED;
@@ -67,7 +67,7 @@ public class Keys implements KeyListener {
 				break;
 			}
 				
-			player1.animation = player1.aniRight;
+			player1.animation = player1.animationWalkRight;
 			player1.moveAngle = (player1.faceAngle + 90);
 			if (player1.velocity.x <= 1)
 				player1.velocity.x += calcAngleMoveX(player1.moveAngle) * START_SPEED;
@@ -96,7 +96,7 @@ public class Keys implements KeyListener {
 				break;
 			}
 				
-			player2.animation = player2.aniLeft;
+			player2.animation = player2.animationWalkLeft;
 			player2.moveAngle = (player2.faceAngle - 90);
 			if (player2.velocity.x >= -1)
 				player2.velocity.x += calcAngleMoveX(player2.moveAngle) * START_SPEED;
@@ -112,7 +112,7 @@ public class Keys implements KeyListener {
 				break;
 			}
 				
-			player2.animation = player2.aniRight;
+			player2.animation = player2.animationWalkRight;
 			player2.moveAngle = (player2.faceAngle + 90);
 			if (player2.velocity.x <= 1)
 				player2.velocity.x += calcAngleMoveX(player2.moveAngle) * START_SPEED;

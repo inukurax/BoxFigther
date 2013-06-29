@@ -6,8 +6,7 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-
-import network.BoxFigther;
+import run.BoxFigther;
 
 /**
  * Holds all the accessor and mutator methods for the game entities.

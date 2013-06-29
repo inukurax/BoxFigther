@@ -1,11 +1,7 @@
 package run;
+
 import java.awt.Point;
-
-import network.BoxFigther;
-
 import sprites.AnimatedSprite;
-
-
 
 public class Camera {
 

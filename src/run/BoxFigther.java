@@ -1,7 +1,8 @@
-package network;
+package run;
 
 import java.applet.Applet;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -12,7 +13,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import controls.Keys;
-import run.Camera;
 import sprites.AnimatedSprite;
 import sprites.Animation;
 
@@ -28,7 +28,7 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 	// jump height in pixels
 	public static final int JUMP_HEIGHT = 100;
 	public static final int JUMP_SPEED = 7; 
-	public static GameState GAME_STATE = GameState.GAME_RUNNING;
+	public static GameState GAME_STATE = GameState.GAME_PAUSE;
 
 	// screen size
 	public static int SCR_HEIGHT = 800;
@@ -38,8 +38,8 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 	private Graphics2D g2d; // main drawing object for the backbuffer
 	private AnimatedSprite sprite;
 	private AnimatedSprite sprite2;
-
 	private AnimatedSprite dummy;
+	
 	private int xOnScreen;
 	private int yOnScreen;
 	private BufferedImage background;
@@ -77,16 +77,16 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 		sprite.camera = camera;
 		int kickDelay = 3;
 		int hitDelay = 1;
-		sprite.aniRight = new Animation(sprite, 0, 12, 2);
-		sprite.aniLeft = new Animation (sprite, 12, 24, 2);
+		sprite.animationWalkRight = new Animation(sprite, 0, 12, 2);
+		sprite.animationWalkLeft = new Animation (sprite, 12, 24, 2);
 		sprite.stanceRight = 24;
 
-		sprite.aniHitRight = new Animation(sprite, 25, 32, hitDelay);
-		sprite.aniKickRight = new Animation(sprite, 32, 36, kickDelay);
+		sprite.animationHitRight = new Animation(sprite, 25, 32, hitDelay);
+		sprite.animationKickRight = new Animation(sprite, 32, 36, kickDelay);
 		sprite.stanceLeft = 36;
 
-		sprite.aniHitLeft = new Animation(sprite, 37,  44, hitDelay);
-		sprite.aniKickLeft = new Animation(sprite, 44, 48, kickDelay);
+		sprite.animationHitLeft = new Animation(sprite, 37,  44, hitDelay);
+		sprite.animationKickLeft = new Animation(sprite, 44, 48, kickDelay);
 		sprite.aniJumpRight = new Animation(sprite, 48, 52, 1);
 		sprite.aniJumpLeft = new Animation(sprite, 54, 58, 1);
 		
@@ -100,16 +100,16 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 		sprite2.rotationRate = 0.0;
 		sprite2.animationDirection = -1;
 		
-		sprite2.aniRight = new Animation(sprite2, 0, 12, 2);
-		sprite2.aniLeft = new Animation (sprite2, 12, 24, 2);
+		sprite2.animationWalkRight = new Animation(sprite2, 0, 12, 2);
+		sprite2.animationWalkLeft = new Animation (sprite2, 12, 24, 2);
 		sprite2.stanceRight = 24;
 
-		sprite2.aniHitRight = new Animation(sprite2, 25, 32, hitDelay);
-		sprite2.aniKickRight = new Animation(sprite2, 32, 36, kickDelay);
+		sprite2.animationHitRight = new Animation(sprite2, 25, 32, hitDelay);
+		sprite2.animationKickRight = new Animation(sprite2, 32, 36, kickDelay);
 		sprite2.stanceLeft = 36;
 
-		sprite2.aniHitLeft = new Animation(sprite2, 37,  44, hitDelay);
-		sprite2.aniKickLeft = new Animation(sprite2, 44, 48, kickDelay);
+		sprite2.animationHitLeft = new Animation(sprite2, 37,  44, hitDelay);
+		sprite2.animationKickLeft = new Animation(sprite2, 44, 48, kickDelay);
 		sprite2.aniJumpRight = new Animation(sprite2, 48, 52, 1);
 		sprite2.aniJumpLeft = new Animation(sprite2, 54, 58, 1);
 				
@@ -140,11 +140,16 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 			} catch (InterruptedException e) {
 					e.printStackTrace();
 			}
+			g2d.setFont(new Font("Times New Roman", Font.PLAIN, 12));
+			drawBackground();
+
 			switch (GAME_STATE) {
 			case GAME_OVER:
 				g2d.drawString("GAME_OVER", SCR_WIDTH / 2, SCR_HEIGHT / 2);
 				break;
 			case GAME_PAUSE:
+				g2d.setFont(new Font("Verdana", Font.BOLD, 36));
+				g2d.setColor(Color.RED);
 				g2d.drawString("PAUSE", SCR_WIDTH / 2, SCR_HEIGHT / 2);
 				break;
 			case GAME_RUNNING:
@@ -157,18 +162,24 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 		}
 	}
 	
-	private void gameUpdate() {
+	private void drawBackground() {
 		// clears the background
-		g2d.setColor(Color.WHITE);
-		g2d.fill(new Rectangle(0, 0, SCR_WIDTH, SCR_HEIGHT));
-		// background
-		Point pos = camera.getPlayerPoint();
-		g2d.drawImage(background, 0, 0, SCR_WIDTH, SCR_HEIGHT,pos.x, pos.y, pos.x+SCR_WIDTH , pos.y+SCR_HEIGHT , null);
+				g2d.fill(new Rectangle(0, 0, SCR_WIDTH, SCR_HEIGHT));
+				// background
+				Point pos = camera.getPlayerPoint();
+				g2d.drawImage(background, 0, 0, SCR_WIDTH, SCR_HEIGHT,pos.x, pos.y, pos.x+SCR_WIDTH , pos.y+SCR_HEIGHT , null);
+				g2d.setColor(Color.RED);
 
-		
-		sprite.drawBounds(Color.RED,g2d);
-		dummy.drawBounds(Color.BLUE,g2d);
-		sprite2.drawBounds(Color.GREEN,g2d);
+				g2d.drawString("Player1 controls: LEFT-UP-RIGHT-M-N", SCR_WIDTH - 400, 28);
+
+				g2d.drawString("Player2 controls: A-W-D-F-G", SCR_WIDTH - 400, 40);
+				g2d.drawString("Pause: ESCAPE", SCR_WIDTH - 400, 12);
+	}
+
+	private void gameUpdate() {
+		sprite.drawBounds(Color.RED, g2d);
+		dummy.drawBounds(Color.BLUE, g2d);
+		sprite2.drawBounds(Color.GREEN, g2d);
 
 		//debug
 		g2d.setColor(Color.RED);
@@ -184,11 +195,8 @@ public class BoxFigther extends Applet implements Runnable, MouseMotionListener 
 		
 		g2d.drawString("Player1", sprite.getScrPosition().x + (sprite.frameWidth / 2),
 				sprite.getScrPosition().y );
-		g2d.drawString("Player1 controls: LEFT-UP-RIGHT-M-N", SCR_WIDTH - 400, 28);
 		g2d.drawString("Player2", sprite2.getScrPosition().x + (sprite2.frameWidth / 2),
 				sprite2.getScrPosition().y);
-		g2d.drawString("Player2 controls: A-W-D-F-G", SCR_WIDTH - 400, 40);
-		g2d.drawString("Pause: ESCAPE", SCR_WIDTH - 400, 12);
 		dummy.draw(g2d);
 		sprite.draw(g2d);
 		sprite2.draw(g2d);
